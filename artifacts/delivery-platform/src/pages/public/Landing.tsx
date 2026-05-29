@@ -34,16 +34,20 @@ export default function Landing() {
           <div className="flex-1 mb-12 lg:mb-0">
             <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 rounded-full px-4 py-1.5 text-xs font-semibold mb-6 uppercase tracking-widest">
               <span className="w-1.5 h-1.5 rounded-full bg-[#f5c518]" />
-              Livraison rapide au Burkina Faso
+              Disponible à Bobo-Dioulasso
             </div>
 
             <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight mb-5 text-white">
               Vos courses livrées<br />
               <span className="text-[#f5c518]">en quelques minutes</span>
             </h1>
+            <div className="inline-flex items-center gap-1.5 bg-[#f5c518]/20 border border-[#f5c518]/30 text-[#f5c518] rounded-full px-3 py-1 text-xs font-semibold mb-4">
+              <MapPin className="h-3 w-3" />
+              Zone de service : Bobo-Dioulasso uniquement
+            </div>
             <p className="text-white/70 text-base lg:text-lg mb-8 leading-relaxed max-w-lg">
               Médicaments, repas, documents, gaz — nos livreurs à moto parcourent
-              Ouagadougou pour vous. Commandez depuis chez vous, recevez où vous êtes.
+              Bobo-Dioulasso pour vous. Commandez depuis chez vous, recevez où vous êtes.
             </p>
 
             <div className="flex flex-wrap gap-3">
@@ -183,7 +187,7 @@ export default function Landing() {
                 Gagnez votre vie<br />à votre rythme
               </h2>
               <p className="text-white/60 leading-relaxed mb-6 max-w-md">
-                Rejoignez notre réseau de livreurs à Ouagadougou. Choisissez vos horaires,
+                Rejoignez notre réseau de livreurs à Bobo-Dioulasso. Choisissez vos horaires,
                 acceptez les courses quand vous voulez et touchez vos gains directement après chaque livraison.
               </p>
               <div className="grid grid-cols-3 gap-4 mb-8">
@@ -239,7 +243,8 @@ export default function Landing() {
           </div>
           <span className="font-semibold text-foreground">TELIMA</span>
         </div>
-        <p>Livraison rapide et fiable au Burkina Faso</p>
+        <p>Livraison rapide et fiable à Bobo-Dioulasso</p>
+        <p className="mt-1 text-xs text-muted-foreground/60">Zone de service actuelle : Bobo-Dioulasso, Burkina Faso</p>
       </footer>
     </div>
   );
