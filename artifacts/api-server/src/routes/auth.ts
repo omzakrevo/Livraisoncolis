@@ -30,6 +30,7 @@ router.post("/auth/register", async (req, res): Promise<void> => {
     await db.insert(driversTable).values({
       userId: user.id,
       vehicleType: vehicleType ?? "motorcycle",
+      isVerified: true,
     });
   }
 
