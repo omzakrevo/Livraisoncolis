@@ -34,18 +34,36 @@ export default function ClientDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Bonjour, {user?.name?.split(" ")[0]} 👋</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Que voulez-vous livrer aujourd'hui ?</p>
+      {/* Welcome banner with photo */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#062d17] via-[#0f6030] to-[#1a9b4b] min-h-[140px] flex items-center">
+        {/* Text side */}
+        <div className="flex-1 px-6 py-5 z-10">
+          <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Tableau de bord</p>
+          <h1 className="text-2xl font-extrabold text-white mb-1">
+            Bonjour, {user?.name?.split(" ")[0]} 👋
+          </h1>
+          <p className="text-white/70 text-sm mb-4">Que voulez-vous livrer aujourd'hui ?</p>
+          <Link to="/orders/new">
+            <Button
+              className="gap-2 rounded-xl font-bold bg-[#f5c518] hover:bg-[#e6b800] text-[#062d17] border-0 shadow-md"
+              size="sm"
+              data-testid="button-new-order"
+            >
+              <PlusCircle className="h-4 w-4" />
+              Nouvelle commande
+            </Button>
+          </Link>
         </div>
-        <Link to="/orders/new">
-          <Button className="gap-2 rounded-xl font-semibold" data-testid="button-new-order">
-            <PlusCircle className="h-4 w-4" />
-            Nouvelle commande
-          </Button>
-        </Link>
+        {/* Photo */}
+        <div className="hidden sm:block relative h-[140px] w-[140px] shrink-0">
+          <img
+            src="/hero-photo.png"
+            alt="TELIMA Bobo-Dioulasso"
+            className="absolute inset-0 w-full h-full object-cover object-top"
+          />
+          {/* fade to left */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0f6030] to-transparent" style={{ width: "40%" }} />
+        </div>
       </div>
 
       {/* Active delivery tracker — shown prominently when order is in progress */}
