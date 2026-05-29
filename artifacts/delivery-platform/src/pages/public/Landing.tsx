@@ -65,15 +65,19 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Illustration card */}
-          <div className="lg:w-80 flex justify-center">
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-8 text-center w-64">
-              <div className="text-7xl mb-4">🛵</div>
-              <p className="text-white font-bold text-lg mb-1">Livreur en route</p>
-              <p className="text-white/60 text-sm mb-4">Commande #12345 acceptée</p>
-              <div className="flex items-center justify-center gap-2 bg-white/15 rounded-full px-4 py-2">
-                <div className="w-2 h-2 rounded-full bg-[#4aba7d] animate-pulse" />
-                <span className="text-white/80 text-xs font-semibold">En cours de livraison</span>
+          {/* Hero photo */}
+          <div className="lg:w-[420px] flex justify-center">
+            <div className="relative">
+              <img
+                src="/hero-photo.png"
+                alt="Utilisatrice TELIMA à Bobo-Dioulasso"
+                className="rounded-3xl shadow-2xl object-cover w-full max-w-sm lg:max-w-none"
+                style={{ maxHeight: 420 }}
+              />
+              {/* floating badge */}
+              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-2.5 shadow-lg flex items-center gap-2.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[#062d17] font-bold text-sm">Commandez depuis votre téléphone</span>
               </div>
             </div>
           </div>
