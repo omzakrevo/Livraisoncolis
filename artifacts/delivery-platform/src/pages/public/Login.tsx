@@ -5,8 +5,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { useLogin } from "@workspace/api-client-react";
-import { useAuth } from "@/lib/auth";
+import { useLogin, getGetMeQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Truck, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,7 +19,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const { refetchUser } = useAuth();
+  const queryClient = useQueryClient();
   const login = useLogin();
   const { toast } = useToast();
 
@@ -31,14 +31,12 @@ export default function Login() {
   const onSubmit = (data: FormData) => {
     login.mutate({ data }, {
       onSuccess: (res) => {
-        // Redirect first based on the login response, then trigger refetch in background.
-        // This avoids a race condition where ProtectedRoute would check isAuthenticated
-        // before the auth context has re-rendered with the new user.
+        // Pre-populate the auth cache so ProtectedRoute sees isAuthenticated=true immediately
+        if (res.user) queryClient.setQueryData(getGetMeQueryKey(), res.user);
         const role = res.user?.role;
         if (role === "admin") setLocation("/admin/dashboard");
         else if (role === "driver") setLocation("/driver/dashboard");
         else setLocation("/dashboard");
-        refetchUser();
       },
       onError: () => {
         toast({ title: "Erreur", description: "Email ou mot de passe incorrect.", variant: "destructive" });

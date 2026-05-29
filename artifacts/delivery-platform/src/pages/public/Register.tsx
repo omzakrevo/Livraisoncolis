@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useRegister } from "@workspace/api-client-react";
-import { useAuth } from "@/lib/auth";
+import { useRegister, getGetMeQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Truck, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,7 +28,7 @@ export default function Register() {
   const params = new URLSearchParams(search);
   const initialRole = params.get("role") === "driver" ? "driver" : "client";
 
-  const { refetchUser } = useAuth();
+  const queryClient = useQueryClient();
   const register = useRegister();
   const { toast } = useToast();
 
@@ -42,11 +42,10 @@ export default function Register() {
   const onSubmit = (data: FormData) => {
     register.mutate({ data }, {
       onSuccess: (res) => {
-        // Redirect first, then refetch in background (same race-condition fix as Login)
+        if (res.user) queryClient.setQueryData(getGetMeQueryKey(), res.user);
         const r = res.user?.role;
         if (r === "driver") setLocation("/driver/dashboard");
         else setLocation("/dashboard");
-        refetchUser();
       },
       onError: (err: any) => {
         const msg = err?.data?.error || "Une erreur est survenue.";

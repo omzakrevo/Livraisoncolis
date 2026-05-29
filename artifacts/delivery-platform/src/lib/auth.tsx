@@ -17,7 +17,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { data: user, isLoading, isFetching, refetch } = useGetMe({
+  const { data: user, isLoading, refetch } = useGetMe({
     query: {
       queryKey: getGetMeQueryKey(),
       retry: false,
@@ -28,9 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user: user || null,
-        // Include isFetching so ProtectedRoute shows spinner during post-login refetch
-        // instead of immediately redirecting to /login with stale isAuthenticated=false
-        isLoading: isLoading || isFetching,
+        isLoading,
         isAuthenticated: !!user,
         refetchUser: refetch,
       }}
