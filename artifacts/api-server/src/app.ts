@@ -7,6 +7,10 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
+// Trust the reverse proxy (Replit) so that req.secure is true for HTTPS connections
+// This is required for session cookies with secure:true to work behind a proxy
+app.set("trust proxy", 1);
+
 app.use(
   pinoHttp({
     logger,
