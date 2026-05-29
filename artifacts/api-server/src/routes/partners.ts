@@ -63,7 +63,7 @@ router.patch("/partners/:id", requireRole("admin"), async (req, res): Promise<vo
   }
   const [partner] = await db
     .update(partnersTable)
-    .set(body.data)
+    .set(body.data as Partial<typeof partnersTable.$inferInsert>)
     .where(eq(partnersTable.id, params.data.id))
     .returning();
   if (!partner) {

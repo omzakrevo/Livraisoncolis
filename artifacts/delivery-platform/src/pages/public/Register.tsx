@@ -37,11 +37,12 @@ export default function Register() {
 
   const onSubmit = (data: FormData) => {
     register.mutate({ data }, {
-      onSuccess: async (res) => {
-        await refetchUser();
+      onSuccess: (res) => {
+        // Redirect first, then refetch in background (same race-condition fix as Login)
         const r = res.user?.role;
         if (r === "driver") setLocation("/driver/dashboard");
         else setLocation("/dashboard");
+        refetchUser();
       },
       onError: (err: any) => {
         const msg = err?.data?.error || "Une erreur est survenue.";

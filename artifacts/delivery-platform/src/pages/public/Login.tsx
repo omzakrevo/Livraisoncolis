@@ -30,12 +30,15 @@ export default function Login() {
 
   const onSubmit = (data: FormData) => {
     login.mutate({ data }, {
-      onSuccess: async (res) => {
-        await refetchUser();
+      onSuccess: (res) => {
+        // Redirect first based on the login response, then trigger refetch in background.
+        // This avoids a race condition where ProtectedRoute would check isAuthenticated
+        // before the auth context has re-rendered with the new user.
         const role = res.user?.role;
         if (role === "admin") setLocation("/admin/dashboard");
         else if (role === "driver") setLocation("/driver/dashboard");
         else setLocation("/dashboard");
+        refetchUser();
       },
       onError: () => {
         toast({ title: "Erreur", description: "Email ou mot de passe incorrect.", variant: "destructive" });
