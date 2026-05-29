@@ -1,5 +1,5 @@
 import { useAuth } from "@/lib/auth";
-import { useGetMyDriver, useSetDriverAvailability, useListOrders, getGetMyDriverQueryKey } from "@workspace/api-client-react";
+import { useGetMyDriver, useSetDriverAvailability, useListOrders, getGetMyDriverQueryKey, getListOrdersQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,14 +8,18 @@ import { Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { statusLabel, statusColor } from "@/lib/orderStatus";
-import { Truck, Package, CheckCircle2, DollarSign, ToggleRight } from "lucide-react";
+import { Truck, Package, CheckCircle2, DollarSign, ToggleRight, Radio } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
 export default function DriverDashboard() {
   const { user } = useAuth();
-  const { data: driver, isLoading: driverLoading } = useGetMyDriver();
-  const { data: ordersData, isLoading: ordersLoading } = useListOrders();
+  const { data: driver, isLoading: driverLoading } = useGetMyDriver({
+    query: { queryKey: getGetMyDriverQueryKey(), refetchInterval: 5000 },
+  });
+  const { data: ordersData, isLoading: ordersLoading } = useListOrders(undefined, {
+    query: { queryKey: getListOrdersQueryKey(), refetchInterval: 5000 },
+  });
   const setAvailability = useSetDriverAvailability();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -42,6 +46,10 @@ export default function DriverDashboard() {
         <div>
           <h1 className="text-2xl font-bold">Bonjour, {user?.name?.split(" ")[0]} 👋</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Tableau de bord livreur</p>
+        </div>
+        <div className="flex items-center gap-1.5 bg-primary/10 text-primary rounded-full px-3 py-1.5 text-xs font-semibold">
+          <Radio className="h-3 w-3 animate-pulse" />
+          En direct
         </div>
       </div>
 

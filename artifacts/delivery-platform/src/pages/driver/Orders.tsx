@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useListOrders, useAcceptOrder, useRejectOrder, getListOrdersQueryKey } from "@workspace/api-client-react";
+import { useListOrders, useAcceptOrder, useRejectOrder, getListOrdersQueryKey, ListOrdersParams } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +22,10 @@ function CountdownTimer({ seconds }: { seconds: number }) {
 }
 
 export default function DriverOrders() {
-  const { data, isLoading, refetch } = useListOrders({ status: "assigned" });
+  const params: ListOrdersParams = { status: "assigned" };
+  const { data, isLoading, refetch, isFetching } = useListOrders(params, {
+    query: { queryKey: getListOrdersQueryKey(params), refetchInterval: 5000 },
+  });
   const acceptOrder = useAcceptOrder();
   const rejectOrder = useRejectOrder();
   const queryClient = useQueryClient();
@@ -52,7 +55,13 @@ export default function DriverOrders() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Commandes disponibles</h1>
-        <Button variant="outline" size="sm" onClick={() => refetch()} data-testid="button-refresh">Actualiser</Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 bg-primary/10 text-primary rounded-full px-3 py-1.5 text-xs font-semibold">
+            <span className={`w-1.5 h-1.5 rounded-full ${isFetching ? "bg-primary animate-ping" : "bg-primary animate-pulse"}`} />
+            En direct
+          </div>
+          <Button variant="outline" size="sm" onClick={() => refetch()} data-testid="button-refresh">Actualiser</Button>
+        </div>
       </div>
 
       {isLoading ? (
