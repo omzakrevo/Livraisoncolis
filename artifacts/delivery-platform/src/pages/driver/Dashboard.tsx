@@ -11,6 +11,7 @@ import { statusLabel, statusColor } from "@/lib/orderStatus";
 import { Truck, Package, CheckCircle2, DollarSign, ToggleRight, Radio } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import DeliveryTracker from "@/components/DeliveryTracker";
 
 export default function DriverDashboard() {
   const { user } = useAuth();
@@ -110,36 +111,58 @@ export default function DriverDashboard() {
         ))}
       </div>
 
-      {/* Active order */}
+      {/* Active order with inline tracker */}
       {active && (
-        <div className="bg-gradient-to-br from-[#0f6030] to-[#1a9b4b] rounded-2xl p-5 text-white">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-2 h-2 rounded-full bg-[#f5c518] animate-pulse" />
-            <h2 className="font-semibold text-sm uppercase tracking-wide text-white/80">Commande en cours</h2>
+        <div className="rounded-2xl border-2 border-primary/30 overflow-hidden" data-testid="active-order-card">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#0f6030] to-[#1a9b4b] px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#f5c518]" style={{ animation: "ping-yellow 1.5s ease-in-out infinite" }} />
+              <h2 className="font-semibold text-sm text-white uppercase tracking-wide">Livraison en cours</h2>
+            </div>
+            <Badge className={statusColor(active.status)} variant="secondary">{statusLabel(active.status)}</Badge>
           </div>
-          <div className="space-y-2 text-sm mb-4">
+
+          {/* Tracker */}
+          <div className="px-5 pt-4 pb-2 bg-primary/5">
+            <DeliveryTracker status={active.status as Parameters<typeof DeliveryTracker>[0]["status"]} />
+          </div>
+
+          {/* Order info */}
+          <div className="px-5 pb-4 bg-primary/5 space-y-2 text-sm">
             {active.pickupAddress && (
-              <div className="flex justify-between gap-4">
-                <span className="text-white/60 shrink-0">Récupération</span>
-                <span className="font-medium text-right truncate">{active.pickupAddress}</span>
+              <div className="flex gap-2 items-start">
+                <span className="text-muted-foreground shrink-0 w-24">Récupération</span>
+                <span className="font-medium truncate">{active.pickupAddress}</span>
               </div>
             )}
-            <div className="flex justify-between gap-4">
-              <span className="text-white/60 shrink-0">Livraison</span>
-              <span className="font-medium text-right truncate">{active.deliveryAddress}</span>
+            <div className="flex gap-2 items-start">
+              <span className="text-muted-foreground shrink-0 w-24">Livraison</span>
+              <span className="font-medium truncate">{active.deliveryAddress}</span>
             </div>
-            <div className="flex justify-between gap-4">
-              <span className="text-white/60 shrink-0">Statut</span>
-              <Badge className={statusColor(active.status)} variant="secondary">{statusLabel(active.status)}</Badge>
+            <div className="flex gap-2 items-center pt-1">
+              <span className="text-muted-foreground shrink-0 w-24">Votre gain</span>
+              <span className="font-bold text-green-600">{(active.driverAmount ?? 0).toLocaleString()} FCFA</span>
             </div>
           </div>
-          <Link to="/driver/current">
-            <Button className="w-full bg-white text-primary hover:bg-white/90 font-semibold rounded-xl" size="sm" data-testid="button-view-current">
-              Voir la commande →
-            </Button>
-          </Link>
+
+          <div className="px-5 py-3 bg-card border-t">
+            <Link to="/driver/current">
+              <Button className="w-full gap-2 font-semibold" size="sm" data-testid="button-view-current">
+                <Truck className="h-4 w-4" />
+                Gérer la livraison →
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes ping-yellow {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(2); opacity: 0; }
+        }
+      `}</style>
 
       {/* Recent deliveries */}
       <div className="bg-card border rounded-2xl">
