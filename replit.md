@@ -1,4 +1,4 @@
-# Livrelo
+# TELIMA
 
 Plateforme de livraison à la demande pour le Burkina Faso. Trois interfaces : Client, Livreur (Driver) et Admin.
 

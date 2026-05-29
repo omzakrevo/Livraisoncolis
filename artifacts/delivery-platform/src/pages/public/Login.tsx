@@ -52,7 +52,7 @@ export default function Login() {
           <div className="w-9 h-9 bg-sidebar-primary rounded-lg flex items-center justify-center">
             <Truck className="h-5 w-5 text-sidebar-primary-foreground" />
           </div>
-          <span className="font-bold text-xl text-sidebar-foreground">Livrelo</span>
+          <span className="font-bold text-xl text-sidebar-foreground">TELIMA</span>
         </div>
         <div>
           <p className="text-4xl font-extrabold text-sidebar-foreground leading-tight mb-4">
@@ -63,7 +63,7 @@ export default function Login() {
             Rapide, fiable, à votre service 24h/24.
           </p>
         </div>
-        <p className="text-sidebar-foreground/30 text-sm">© 2026 Livrelo</p>
+        <p className="text-sidebar-foreground/30 text-sm">© 2026 TELIMA</p>
       </div>
 
       {/* Right panel */}
@@ -73,7 +73,7 @@ export default function Login() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Truck className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg">Livrelo</span>
+            <span className="font-bold text-lg">TELIMA</span>
           </div>
 
           <h1 className="text-2xl font-bold mb-1">Connexion</h1>

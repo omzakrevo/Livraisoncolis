@@ -26,7 +26,7 @@ function showBrowserNotif(message: string) {
   try {
     if (!("Notification" in window)) return;
     if (Notification.permission === "granted") {
-      new Notification("Livrelo", { body: message, icon: "/favicon.ico", tag: "livrelo-notif" });
+      new Notification("TELIMA", { body: message, icon: "/favicon.ico", tag: "telima-notif" });
     }
   } catch (_) {
     // Silently ignore if notifications are blocked or unsupported

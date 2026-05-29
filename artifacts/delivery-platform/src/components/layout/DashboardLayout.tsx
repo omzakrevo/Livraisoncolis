@@ -105,7 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Truck className="h-4 w-4 text-sidebar-primary-foreground" />
           </div>
           <div>
-            <p className="font-bold text-sidebar-foreground text-sm">Livrelo</p>
+            <p className="font-bold text-sidebar-foreground text-sm">TELIMA</p>
             <p className="text-xs text-sidebar-foreground/50 capitalize">{user?.role}</p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <header className="lg:hidden flex items-center justify-between px-4 h-14 border-b bg-sidebar text-sidebar-foreground shrink-0">
           <div className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-sidebar-primary" />
-            <span className="font-bold text-sm">Livrelo</span>
+            <span className="font-bold text-sm">TELIMA</span>
           </div>
           <button onClick={() => setMobileOpen(!mobileOpen)} data-testid="button-menu">
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
