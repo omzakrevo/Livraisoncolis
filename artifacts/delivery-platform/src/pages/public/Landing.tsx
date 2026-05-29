@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Package, ShoppingBag, Shield, Clock, MapPin, Truck, ChevronRight } from "lucide-react";
+import { Package, ShoppingBag, Shield, Clock, MapPin, Truck, ChevronRight, Bike, DollarSign, Calendar } from "lucide-react";
 
 export default function Landing() {
   return (
@@ -24,15 +24,14 @@ export default function Landing() {
           </div>
         </div>
       </header>
-      {/* Hero — green gradient, full-bleed on mobile, split on desktop */}
+
+      {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#062d17] via-[#0f6030] to-[#1a9b4b]">
-        {/* Decorative circles */}
         <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/5 pointer-events-none" />
         <div className="absolute bottom-0 left-1/3 w-96 h-96 rounded-full bg-white/[0.03] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 py-20 lg:py-28 lg:flex lg:items-center lg:gap-16">
           <div className="flex-1 mb-12 lg:mb-0">
-            {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 rounded-full px-4 py-1.5 text-xs font-semibold mb-6 uppercase tracking-widest">
               <span className="w-1.5 h-1.5 rounded-full bg-[#f5c518]" />
               Livraison rapide au Burkina Faso
@@ -42,7 +41,10 @@ export default function Landing() {
               Vos courses livrées<br />
               <span className="text-[#f5c518]">en quelques minutes</span>
             </h1>
-            <p className="text-white/70 text-base lg:text-lg mb-8 leading-relaxed max-w-lg">Médicaments, repas, documents, gaz — nos livreurs à moto parcourent Bobo Dioulaso pour vous. Commandez depuis chez vous, recevez où vous êtes.</p>
+            <p className="text-white/70 text-base lg:text-lg mb-8 leading-relaxed max-w-lg">
+              Médicaments, repas, documents, gaz — nos livreurs à moto parcourent
+              Ouagadougou pour vous. Commandez depuis chez vous, recevez où vous êtes.
+            </p>
 
             <div className="flex flex-wrap gap-3">
               <Link to="/register">
@@ -73,6 +75,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
       {/* Services */}
       <section className="bg-muted/40 py-20">
         <div className="max-w-6xl mx-auto px-4">
@@ -118,6 +121,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
       {/* How it works */}
       <section className="py-20 max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-2">Comment ça marche</h2>
@@ -144,6 +148,7 @@ export default function Landing() {
           ))}
         </div>
       </section>
+
       {/* Stats banner */}
       <section className="bg-gradient-to-r from-[#062d17] to-[#1a9b4b] text-white py-16">
         <div className="max-w-6xl mx-auto px-4">
@@ -162,8 +167,60 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Driver section */}
+      <section className="py-20 max-w-6xl mx-auto px-4">
+        <div className="bg-gradient-to-br from-[#062d17] to-[#0f6030] rounded-3xl p-8 lg:p-12 overflow-hidden relative">
+          <div className="absolute right-0 top-0 bottom-0 text-[10rem] flex items-center pr-8 opacity-10 pointer-events-none select-none">
+            🛵
+          </div>
+          <div className="relative lg:flex lg:items-center lg:gap-12">
+            <div className="flex-1 mb-8 lg:mb-0">
+              <div className="inline-flex items-center gap-2 bg-[#f5c518]/20 text-[#f5c518] rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest mb-4">
+                Devenez livreur
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4">
+                Gagnez votre vie<br />à votre rythme
+              </h2>
+              <p className="text-white/60 leading-relaxed mb-6 max-w-md">
+                Rejoignez notre réseau de livreurs à Ouagadougou. Choisissez vos horaires,
+                acceptez les courses quand vous voulez et touchez vos gains directement après chaque livraison.
+              </p>
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                {[
+                  { icon: DollarSign, label: "Gains immédiats", desc: "Après chaque course" },
+                  { icon: Calendar, label: "Horaires libres", desc: "Vous décidez" },
+                  { icon: Bike, label: "Moto ou vélo", desc: "Tout véhicule" },
+                ].map(({ icon: Icon, label, desc }) => (
+                  <div key={label} className="text-center">
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                      <Icon className="h-5 w-5 text-[#f5c518]" />
+                    </div>
+                    <p className="text-white font-semibold text-sm">{label}</p>
+                    <p className="text-white/50 text-xs">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="lg:w-64 shrink-0">
+              <Link to="/register?role=driver">
+                <Button
+                  size="lg"
+                  className="w-full bg-[#f5c518] hover:bg-[#e6b800] text-[#062d17] font-bold rounded-xl border-0 shadow-lg gap-2 mb-3"
+                  data-testid="button-become-driver"
+                >
+                  Devenir livreur
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <p className="text-white/40 text-xs text-center">Inscription gratuite · Vérification rapide</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="py-20 text-center max-w-6xl mx-auto px-4">
+      <section className="py-16 text-center max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold mb-3">Prêt à commander ?</h2>
         <p className="text-muted-foreground mb-8">Créez votre compte en moins d'une minute.</p>
         <Link to="/register">
@@ -173,6 +230,7 @@ export default function Landing() {
           </Button>
         </Link>
       </section>
+
       {/* Footer */}
       <footer className="border-t py-8 text-center text-muted-foreground text-sm bg-muted/20">
         <div className="flex items-center justify-center gap-2 mb-2">
