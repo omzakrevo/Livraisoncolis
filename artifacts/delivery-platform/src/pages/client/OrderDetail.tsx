@@ -3,16 +3,26 @@ import { useGetOrder, getGetOrderQueryKey, useCancelOrder, getListOrdersQueryKey
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { useQueryClient } from "@tanstack/react-query";
 import { statusLabel, statusColor } from "@/lib/orderStatus";
-import { Package, MapPin, Phone, Truck, Clock, ShieldCheck, XCircle } from "lucide-react";
+import { Package, MapPin, Phone, Truck, ShieldCheck, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import DeliveryTracker from "@/components/DeliveryTracker";
 
 export default function OrderDetail() {
   const { id } = useParams<{ id: string }>();
   const orderId = parseInt(id ?? "0", 10);
-  const { data: order, isLoading } = useGetOrder(orderId, { query: { enabled: !!orderId, queryKey: getGetOrderQueryKey(orderId) } });
+  const { data: order, isLoading } = useGetOrder(orderId, {
+    query: {
+      enabled: !!orderId,
+      queryKey: getGetOrderQueryKey(orderId),
+      refetchInterval: (q) => {
+        const status = (q.state.data as { status?: string } | undefined)?.status;
+        const terminal = ["delivered", "cancelled"];
+        return status && terminal.includes(status) ? false : 5000;
+      },
+    },
+  });
   const cancelOrder = useCancelOrder();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -32,6 +42,7 @@ export default function OrderDetail() {
 
   const canCancel = ["pending", "assigned"].includes(order.status);
   const isActive = ["accepted", "pickup_en_route", "picked_up", "delivery_en_route"].includes(order.status);
+  const showTracker = !["cancelled"].includes(order.status);
 
   return (
     <div className="max-w-lg mx-auto space-y-5">
@@ -42,6 +53,23 @@ export default function OrderDetail() {
         </div>
         <Badge className={statusColor(order.status)} variant="secondary">{statusLabel(order.status)}</Badge>
       </div>
+
+      {/* Delivery progress tracker */}
+      {showTracker && (
+        <div className={`rounded-xl p-5 border ${isActive ? "border-primary/30 bg-primary/5" : "bg-card"}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <Truck className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+            <span className="text-sm font-semibold">Progression de la livraison</span>
+            {isActive && (
+              <span className="ml-auto text-xs text-primary font-medium flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary" style={{ animation: "ping-dot2 1.5s ease-in-out infinite" }} />
+                En direct
+              </span>
+            )}
+          </div>
+          <DeliveryTracker status={order.status as Parameters<typeof DeliveryTracker>[0]["status"]} />
+        </div>
+      )}
 
       {/* OTP */}
       {order.otpCode && isActive && (
@@ -136,6 +164,13 @@ export default function OrderDetail() {
           Annuler la commande
         </Button>
       )}
+
+      <style>{`
+        @keyframes ping-dot2 {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(2.5); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }

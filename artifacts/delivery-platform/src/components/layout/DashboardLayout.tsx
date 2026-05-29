@@ -4,7 +4,8 @@ import { useAuth } from "@/lib/auth";
 import { useLogout } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useListNotifications, useListDrivers, getListDriversQueryKey } from "@workspace/api-client-react";
+import { useListDrivers, getListDriversQueryKey } from "@workspace/api-client-react";
+import { useNotificationAlert } from "@/hooks/useNotificationAlert";
 import {
   LayoutDashboard,
   Package,
@@ -54,8 +55,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, refetchUser } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const logout = useLogout();
-  const { data: notifications } = useListNotifications({ unreadOnly: true });
-  const unreadCount = Array.isArray(notifications) ? notifications.length : 0;
+  const unreadCount = useNotificationAlert();
 
   const { data: driversData } = useListDrivers(undefined, {
     query: { queryKey: getListDriversQueryKey(), enabled: user?.role === "admin" },
