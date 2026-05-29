@@ -1,24 +1,35 @@
 import { Link } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { useListOrders } from "@workspace/api-client-react";
+import { useListOrders, getListOrdersQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlusCircle, Package, Clock, CheckCircle2, XCircle, Truck } from "lucide-react";
+import { PlusCircle, Package, Clock, CheckCircle2, XCircle, Truck, ArrowRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { statusLabel, statusColor } from "@/lib/orderStatus";
+import DeliveryTracker from "@/components/DeliveryTracker";
+
+const ACTIVE_STATUSES = ["accepted", "pickup_en_route", "picked_up", "delivery_en_route"] as const;
+type ActiveStatus = typeof ACTIVE_STATUSES[number];
+
+function isActive(s: string): s is ActiveStatus {
+  return (ACTIVE_STATUSES as readonly string[]).includes(s);
+}
 
 export default function ClientDashboard() {
   const { user } = useAuth();
-  const { data, isLoading } = useListOrders();
+  const { data, isLoading } = useListOrders(undefined, {
+    query: { queryKey: getListOrdersQueryKey(), refetchInterval: 6000 },
+  });
   const orders = data?.orders ?? [];
 
   const pending = orders.filter((o) => ["pending", "assigned"].includes(o.status)).length;
-  const active = orders.filter((o) => ["accepted", "pickup_en_route", "picked_up", "delivery_en_route"].includes(o.status)).length;
+  const active = orders.filter((o) => isActive(o.status)).length;
   const delivered = orders.filter((o) => o.status === "delivered").length;
   const cancelled = orders.filter((o) => o.status === "cancelled").length;
 
+  const activeOrder = orders.find((o) => isActive(o.status));
   const recent = orders.slice(0, 5);
 
   return (
@@ -37,17 +48,51 @@ export default function ClientDashboard() {
         </Link>
       </div>
 
-      {/* Hero card */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#0f6030] to-[#1a9b4b] p-5 text-white relative overflow-hidden">
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-6xl opacity-20 pointer-events-none">🛵</div>
-        <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Livraison rapide et fiable</p>
-        <p className="font-bold text-lg mb-3">Nous sommes là pour vous servir !</p>
-        <Link to="/orders/new">
-          <button className="bg-white text-primary font-semibold text-sm rounded-xl px-4 py-2 hover:bg-white/90 transition-colors">
-            Commander maintenant →
-          </button>
-        </Link>
-      </div>
+      {/* Active delivery tracker — shown prominently when order is in progress */}
+      {!isLoading && activeOrder && (
+        <div className="rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10 p-5 relative overflow-hidden" data-testid="active-delivery-card">
+          {/* Animated glow pulse */}
+          <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{ animation: "card-glow 3s ease-in-out infinite" }} />
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Truck className="h-5 w-5 text-primary" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full" style={{ animation: "ping-dot 1.5s ease-in-out infinite" }} />
+              </div>
+              <span className="font-bold text-primary">Livraison en cours</span>
+            </div>
+            <Badge className={statusColor(activeOrder.status)} variant="secondary">
+              {statusLabel(activeOrder.status)}
+            </Badge>
+          </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Commande #{activeOrder.id} · {activeOrder.deliveryAddress}
+          </p>
+
+          <DeliveryTracker status={activeOrder.status as Parameters<typeof DeliveryTracker>[0]["status"]} />
+
+          <Link to={`/orders/${activeOrder.id}`}>
+            <Button variant="outline" size="sm" className="mt-3 gap-2 border-primary/30 text-primary hover:bg-primary hover:text-white w-full sm:w-auto transition-colors">
+              Voir les détails
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Hero card (hidden when active order is shown) */}
+      {!activeOrder && (
+        <div className="rounded-2xl bg-gradient-to-br from-[#0f6030] to-[#1a9b4b] p-5 text-white relative overflow-hidden">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-6xl opacity-20 pointer-events-none">🛵</div>
+          <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Livraison rapide et fiable</p>
+          <p className="font-bold text-lg mb-3">Nous sommes là pour vous servir !</p>
+          <Link to="/orders/new">
+            <button className="bg-white text-primary font-semibold text-sm rounded-xl px-4 py-2 hover:bg-white/90 transition-colors">
+              Commander maintenant →
+            </button>
+          </Link>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -124,6 +169,17 @@ export default function ClientDashboard() {
           </div>
         )}
       </div>
+
+      <style>{`
+        @keyframes card-glow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(26,155,75,0); }
+          50% { box-shadow: 0 0 20px 4px rgba(26,155,75,0.12); }
+        }
+        @keyframes ping-dot {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(2); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
