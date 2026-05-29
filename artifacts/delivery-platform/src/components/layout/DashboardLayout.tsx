@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth";
 import { useLogout } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useListNotifications } from "@workspace/api-client-react";
+import { useListNotifications, useListDrivers, getListDriversQueryKey } from "@workspace/api-client-react";
 import {
   LayoutDashboard,
   Package,
@@ -57,6 +57,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { data: notifications } = useListNotifications({ unreadOnly: true });
   const unreadCount = Array.isArray(notifications) ? notifications.length : 0;
 
+  const { data: driversData } = useListDrivers(undefined, {
+    query: { queryKey: getListDriversQueryKey(), enabled: user?.role === "admin" },
+  });
+  const pendingDriversCount = (driversData ?? []).filter((d) => !d.isVerified && !d.user?.isBlocked).length;
+
   const handleLogout = () => {
     logout.mutate(undefined, {
       onSuccess: () => { refetchUser(); },
@@ -82,7 +87,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { to: "/admin/dashboard", icon: LayoutDashboard, label: "Tableau de bord" },
     { to: "/admin/orders", icon: ClipboardList, label: "Commandes" },
     { to: "/admin/clients", icon: Users, label: "Clients" },
-    { to: "/admin/drivers", icon: UserCheck, label: "Livreurs" },
+    { to: "/admin/drivers", icon: UserCheck, label: "Livreurs", badge: pendingDriversCount },
     { to: "/admin/partners", icon: ShoppingBag, label: "Partenaires" },
     { to: "/admin/products", icon: Package, label: "Produits" },
     { to: "/admin/pricing", icon: DollarSign, label: "Tarifs" },
