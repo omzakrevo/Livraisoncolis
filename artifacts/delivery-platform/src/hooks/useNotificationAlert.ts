@@ -23,15 +23,23 @@ function playBeep() {
 }
 
 function showBrowserNotif(message: string) {
-  if (!("Notification" in window)) return;
-  if (Notification.permission === "granted") {
-    new Notification("Livrelo", { body: message, icon: "/favicon.ico", tag: "livrelo-notif" });
+  try {
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") {
+      new Notification("Livrelo", { body: message, icon: "/favicon.ico", tag: "livrelo-notif" });
+    }
+  } catch (_) {
+    // Silently ignore if notifications are blocked or unsupported
   }
 }
 
 export function requestNotifPermission() {
-  if ("Notification" in window && Notification.permission === "default") {
-    Notification.requestPermission();
+  try {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
+  } catch (_) {
+    // Blocked in iframes or non-secure contexts — silently ignore
   }
 }
 
