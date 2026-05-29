@@ -1,57 +1,79 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Package, ShoppingBag, Shield, Clock, MapPin, Truck, Star, ChevronRight } from "lucide-react";
+import { Package, ShoppingBag, Shield, Clock, MapPin, Truck, ChevronRight } from "lucide-react";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-sans">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
               <Truck className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg tracking-tight">Livrelo</span>
+            <span className="font-bold text-lg tracking-tight text-foreground">Livrelo</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login">
-              <Button variant="ghost" size="sm" data-testid="link-login">Se connecter</Button>
+              <Button variant="ghost" size="sm" className="font-medium" data-testid="link-login">Se connecter</Button>
             </Link>
             <Link to="/register">
-              <Button size="sm" data-testid="link-register">Commencer</Button>
+              <Button size="sm" className="font-semibold rounded-xl" data-testid="link-register">Commencer</Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="max-w-6xl mx-auto px-4 pt-20 pb-24">
-        <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-semibold mb-6 uppercase tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-            Livraison rapide au Burkina Faso
+      {/* Hero — green gradient, full-bleed on mobile, split on desktop */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#062d17] via-[#0f6030] to-[#1a9b4b]">
+        {/* Decorative circles */}
+        <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/5 pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 w-96 h-96 rounded-full bg-white/[0.03] pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto px-4 py-20 lg:py-28 lg:flex lg:items-center lg:gap-16">
+          <div className="flex-1 mb-12 lg:mb-0">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 rounded-full px-4 py-1.5 text-xs font-semibold mb-6 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#f5c518]" />
+              Livraison rapide au Burkina Faso
+            </div>
+
+            <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight mb-5 text-white">
+              Vos courses livrées<br />
+              <span className="text-[#f5c518]">en quelques minutes</span>
+            </h1>
+            <p className="text-white/70 text-base lg:text-lg mb-8 leading-relaxed max-w-lg">
+              Médicaments, repas, documents, gaz — nos livreurs à moto parcourent
+              Ouagadougou pour vous. Commandez depuis chez vous, recevez où vous êtes.
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <Link to="/register">
+                <Button size="lg" className="gap-2 bg-[#f5c518] hover:bg-[#e6b800] text-[#062d17] font-bold rounded-xl border-0 shadow-lg" data-testid="button-get-started">
+                  Créer un compte gratuit
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/login">
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-xl font-medium" data-testid="button-login-hero">
+                  Se connecter
+                </Button>
+              </Link>
+            </div>
           </div>
-          <h1 className="text-5xl font-extrabold leading-tight tracking-tight mb-6">
-            Vos courses livrées<br />
-            <span className="text-primary">en quelques minutes</span>
-          </h1>
-          <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-            Médicaments, repas, documents, gaz — nos livreurs à moto parcourent
-            Ouagadougou pour vous. Commandez depuis chez vous, recevez où vous êtes.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link to="/register">
-              <Button size="lg" className="gap-2" data-testid="button-get-started">
-                Créer un compte gratuit
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button size="lg" variant="outline" data-testid="button-login-hero">
-                Se connecter
-              </Button>
-            </Link>
+
+          {/* Illustration card */}
+          <div className="lg:w-80 flex justify-center">
+            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-8 text-center w-64">
+              <div className="text-7xl mb-4">🛵</div>
+              <p className="text-white font-bold text-lg mb-1">Livreur en route</p>
+              <p className="text-white/60 text-sm mb-4">Commande #12345 acceptée</p>
+              <div className="flex items-center justify-center gap-2 bg-white/15 rounded-full px-4 py-2">
+                <div className="w-2 h-2 rounded-full bg-[#4aba7d] animate-pulse" />
+                <span className="text-white/80 text-xs font-semibold">En cours de livraison</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -62,8 +84,8 @@ export default function Landing() {
           <h2 className="text-3xl font-bold mb-2 text-center">Deux types de service</h2>
           <p className="text-muted-foreground text-center mb-12">Livraison de colis ou course à la demande — on gère tout.</p>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-card border rounded-xl p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <div className="bg-card border rounded-2xl p-6 hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
                 <Package className="h-6 w-6 text-primary" />
               </div>
               <h3 className="font-bold text-xl mb-2">Livraison de colis</h3>
@@ -74,15 +96,15 @@ export default function Landing() {
               <ul className="mt-4 space-y-2">
                 {["Récupération à votre adresse", "Livraison en mains propres", "Code OTP de confirmation"].map(f => (
                   <li key={f} className="flex items-center gap-2 text-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="bg-card border rounded-xl p-6">
-              <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4">
-                <ShoppingBag className="h-6 w-6 text-accent-foreground" />
+            <div className="bg-card border rounded-2xl p-6 hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-[#f5c518]/20 rounded-2xl flex items-center justify-center mb-4">
+                <ShoppingBag className="h-6 w-6 text-[#92400e]" />
               </div>
               <h3 className="font-bold text-xl mb-2">Course / Achat pour moi</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
@@ -92,7 +114,7 @@ export default function Landing() {
               <ul className="mt-4 space-y-2">
                 {["Médicaments, repas, gaz…", "Budget estimé communiqué", "Paiement en espèces"].map(f => (
                   <li key={f} className="flex items-center gap-2 text-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#f5c518] shrink-0" />
                     {f}
                   </li>
                 ))}
@@ -118,7 +140,7 @@ export default function Landing() {
                 <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
                   <Icon className="h-7 w-7 text-primary" />
                 </div>
-                <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow">
                   {step}
                 </span>
               </div>
@@ -129,8 +151,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="bg-primary text-primary-foreground py-16">
+      {/* Stats banner */}
+      <section className="bg-gradient-to-r from-[#062d17] to-[#1a9b4b] text-white py-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
@@ -140,8 +162,8 @@ export default function Landing() {
               { value: "OTP", label: "Validation sécurisée" },
             ].map(({ value, label }) => (
               <div key={label}>
-                <div className="text-3xl font-extrabold mb-1">{value}</div>
-                <div className="text-primary-foreground/70 text-sm">{label}</div>
+                <div className="text-3xl font-extrabold mb-1 text-[#f5c518]">{value}</div>
+                <div className="text-white/70 text-sm">{label}</div>
               </div>
             ))}
           </div>
@@ -153,7 +175,7 @@ export default function Landing() {
         <h2 className="text-3xl font-bold mb-3">Prêt à commander ?</h2>
         <p className="text-muted-foreground mb-8">Créez votre compte en moins d'une minute.</p>
         <Link to="/register">
-          <Button size="lg" className="gap-2" data-testid="button-cta-register">
+          <Button size="lg" className="gap-2 rounded-xl font-semibold" data-testid="button-cta-register">
             Commencer maintenant
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -161,9 +183,11 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 text-center text-muted-foreground text-sm">
+      <footer className="border-t py-8 text-center text-muted-foreground text-sm bg-muted/20">
         <div className="flex items-center justify-center gap-2 mb-2">
-          <Truck className="h-4 w-4 text-primary" />
+          <div className="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
+            <Truck className="h-3 w-3 text-primary-foreground" />
+          </div>
           <span className="font-semibold text-foreground">Livrelo</span>
         </div>
         <p>Livraison rapide et fiable au Burkina Faso</p>

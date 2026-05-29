@@ -40,20 +40,22 @@ export default function DriverDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Bonjour, {user?.name?.split(" ")[0]}</h1>
+          <h1 className="text-2xl font-bold">Bonjour, {user?.name?.split(" ")[0]} 👋</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Tableau de bord livreur</p>
         </div>
       </div>
 
       {/* Availability toggle */}
-      <div className={`rounded-xl p-5 border-2 flex items-center justify-between transition-colors ${
-        driver?.isAvailable ? "bg-green-50 border-green-200" : "bg-card border-border"
+      <div className={`rounded-2xl p-5 border-2 flex items-center justify-between transition-all ${
+        driver?.isAvailable
+          ? "bg-primary/5 border-primary/30"
+          : "bg-card border-border"
       }`}>
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-            driver?.isAvailable ? "bg-green-100" : "bg-muted"
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+            driver?.isAvailable ? "bg-primary/15" : "bg-muted"
           }`}>
-            <ToggleRight className={`h-5 w-5 ${driver?.isAvailable ? "text-green-600" : "text-muted-foreground"}`} />
+            <ToggleRight className={`h-5 w-5 ${driver?.isAvailable ? "text-primary" : "text-muted-foreground"}`} />
           </div>
           <div>
             <p className="font-semibold">{driver?.isAvailable ? "En ligne — disponible" : "Hors ligne"}</p>
@@ -74,22 +76,24 @@ export default function DriverDashboard() {
 
       {/* Verification warning */}
       {driver && !driver.isVerified && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800">
-          Votre compte livreur est en attente de vérification par l'administrateur. Vous ne pourrez pas recevoir de commandes tant que votre compte n'est pas vérifié.
+        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 text-sm text-yellow-800">
+          ⚠️ Votre compte livreur est en attente de vérification. Vous ne pourrez pas recevoir de commandes tant que votre compte n'est pas vérifié.
         </div>
       )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: "Total livraisons", value: delivered.length, icon: CheckCircle2, color: "text-green-600" },
-          { label: "Gains totaux", value: `${totalEarnings.toLocaleString()} FCFA`, icon: DollarSign, color: "text-primary" },
-          { label: "Commandes reçues", value: orders.length, icon: Package, color: "text-blue-600" },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-card border rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
+          { label: "Total livraisons", value: delivered.length, icon: CheckCircle2, colorCls: "text-primary", bgCls: "bg-primary/10" },
+          { label: "Gains totaux", value: `${totalEarnings.toLocaleString()} FCFA`, icon: DollarSign, colorCls: "text-[#f5c518]", bgCls: "bg-yellow-50" },
+          { label: "Commandes reçues", value: orders.length, icon: Package, colorCls: "text-blue-600", bgCls: "bg-blue-50" },
+        ].map(({ label, value, icon: Icon, colorCls, bgCls }) => (
+          <div key={label} className="bg-card border rounded-2xl p-4 hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{label}</span>
-              <Icon className={`h-4 w-4 ${color}`} />
+              <div className={`w-8 h-8 ${bgCls} rounded-xl flex items-center justify-center`}>
+                <Icon className={`h-4 w-4 ${colorCls}`} />
+              </div>
             </div>
             {ordersLoading ? <Skeleton className="h-7 w-16" /> : (
               <p className="text-xl font-bold" data-testid={`stat-${label.replace(/\s/g, "-").toLowerCase()}`}>{value}</p>
@@ -100,54 +104,61 @@ export default function DriverDashboard() {
 
       {/* Active order */}
       {active && (
-        <div className="bg-card border-2 border-primary rounded-xl p-5">
+        <div className="bg-gradient-to-br from-[#0f6030] to-[#1a9b4b] rounded-2xl p-5 text-white">
           <div className="flex items-center gap-2 mb-3">
-            <Truck className="h-4 w-4 text-primary" />
-            <h2 className="font-semibold text-primary">Commande en cours</h2>
+            <div className="w-2 h-2 rounded-full bg-[#f5c518] animate-pulse" />
+            <h2 className="font-semibold text-sm uppercase tracking-wide text-white/80">Commande en cours</h2>
           </div>
           <div className="space-y-2 text-sm mb-4">
             {active.pickupAddress && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Récupération</span>
-                <span className="font-medium max-w-48 text-right truncate">{active.pickupAddress}</span>
+              <div className="flex justify-between gap-4">
+                <span className="text-white/60 shrink-0">Récupération</span>
+                <span className="font-medium text-right truncate">{active.pickupAddress}</span>
               </div>
             )}
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Livraison</span>
-              <span className="font-medium max-w-48 text-right truncate">{active.deliveryAddress}</span>
+            <div className="flex justify-between gap-4">
+              <span className="text-white/60 shrink-0">Livraison</span>
+              <span className="font-medium text-right truncate">{active.deliveryAddress}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Statut</span>
+            <div className="flex justify-between gap-4">
+              <span className="text-white/60 shrink-0">Statut</span>
               <Badge className={statusColor(active.status)} variant="secondary">{statusLabel(active.status)}</Badge>
             </div>
           </div>
           <Link to="/driver/current">
-            <Button className="w-full" size="sm" data-testid="button-view-current">Voir la commande</Button>
+            <Button className="w-full bg-white text-primary hover:bg-white/90 font-semibold rounded-xl" size="sm" data-testid="button-view-current">
+              Voir la commande →
+            </Button>
           </Link>
         </div>
       )}
 
-      {/* Recent history */}
-      <div className="bg-card border rounded-xl">
+      {/* Recent deliveries */}
+      <div className="bg-card border rounded-2xl">
         <div className="px-5 py-4 border-b flex items-center justify-between">
           <h2 className="font-semibold">Livraisons récentes</h2>
           <Link to="/driver/history">
-            <Button variant="ghost" size="sm" className="text-xs">Tout voir</Button>
+            <Button variant="ghost" size="sm" className="text-xs text-primary hover:text-primary">Tout voir</Button>
           </Link>
         </div>
         {ordersLoading ? (
-          <div className="p-5 space-y-3">{[1,2].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
+          <div className="p-5 space-y-3">{[1,2].map(i => <Skeleton key={i} className="h-12 w-full rounded-xl" />)}</div>
         ) : delivered.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground text-sm">Aucune livraison effectuée</div>
         ) : (
           <div className="divide-y">
             {delivered.slice(0, 4).map((o) => (
               <div key={o.id} className="px-5 py-3 flex items-center justify-between text-sm" data-testid={`row-order-${o.id}`}>
-                <div>
-                  <p className="font-medium">Commande #{o.id}</p>
-                  <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(o.createdAt), { addSuffix: true, locale: fr })}</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                    <Package className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Commande #{o.id}</p>
+                    <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(o.createdAt), { addSuffix: true, locale: fr })}</p>
+                  </div>
                 </div>
-                <span className="font-semibold text-green-600">+{(o.driverAmount ?? 0).toLocaleString()} FCFA</span>
+                <span className="font-bold text-primary">+{(o.driverAmount ?? 0).toLocaleString()} FCFA</span>
               </div>
             ))}
           </div>
