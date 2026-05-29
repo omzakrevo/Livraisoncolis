@@ -1,6 +1,6 @@
 ---
-name: Livrelo project setup
-description: Key conventions, seed data, and gotchas for the Livrelo on-demand delivery platform (Burkina Faso).
+name: TELIMA project setup
+description: Key conventions, seed data, and gotchas for the TELIMA on-demand delivery platform (Burkina Faso).
 ---
 
 ## Seed accounts (dev)

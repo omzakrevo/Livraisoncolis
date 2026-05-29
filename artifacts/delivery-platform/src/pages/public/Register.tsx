@@ -68,7 +68,7 @@ export default function Register() {
           <div className="w-9 h-9 bg-sidebar-primary rounded-lg flex items-center justify-center">
             <Truck className="h-5 w-5 text-sidebar-primary-foreground" />
           </div>
-          <span className="font-bold text-xl text-sidebar-foreground">Livrelo</span>
+          <span className="font-bold text-xl text-sidebar-foreground">TELIMA</span>
         </div>
         <div>
           {isDriver ? (
@@ -100,13 +100,13 @@ export default function Register() {
                 Rejoignez<br />la communauté.
               </p>
               <p className="text-sidebar-foreground/60 leading-relaxed">
-                Client ou livreur — chaque rôle a sa place chez Livrelo.
+                Client ou livreur — chaque rôle a sa place chez TELIMA.
                 Inscrivez-vous en quelques secondes.
               </p>
             </>
           )}
         </div>
-        <p className="text-sidebar-foreground/30 text-sm">© 2026 Livrelo</p>
+        <p className="text-sidebar-foreground/30 text-sm">© 2026 TELIMA</p>
       </div>
 
       {/* Right panel */}
@@ -117,14 +117,14 @@ export default function Register() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Truck className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg">Livrelo</span>
+            <span className="font-bold text-lg">TELIMA</span>
           </div>
 
           <h1 className="text-2xl font-bold mb-1">
             {isDriver ? "Devenir livreur" : "Créer un compte"}
           </h1>
           <p className="text-muted-foreground text-sm mb-8">
-            {isDriver ? "Rejoignez le réseau Livrelo" : "Rapide et gratuit"}
+            {isDriver ? "Rejoignez le réseau TELIMA" : "Rapide et gratuit"}
           </p>
 
           <Form {...form}>

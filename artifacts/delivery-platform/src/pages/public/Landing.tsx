@@ -12,7 +12,7 @@ export default function Landing() {
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
               <Truck className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg tracking-tight text-foreground">Livrelo</span>
+            <span className="font-bold text-lg tracking-tight text-foreground">TELIMA</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login">
@@ -237,7 +237,7 @@ export default function Landing() {
           <div className="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
             <Truck className="h-3 w-3 text-primary-foreground" />
           </div>
-          <span className="font-semibold text-foreground">Livrelo</span>
+          <span className="font-semibold text-foreground">TELIMA</span>
         </div>
         <p>Livraison rapide et fiable au Burkina Faso</p>
       </footer>

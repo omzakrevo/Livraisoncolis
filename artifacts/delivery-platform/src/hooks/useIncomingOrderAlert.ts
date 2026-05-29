@@ -25,10 +25,10 @@ function showNewOrderNotif(deliveryAddress: string) {
   try {
     if (!("Notification" in window)) return;
     if (Notification.permission === "granted") {
-      new Notification("🚚 Nouvelle commande Livrelo !", {
+      new Notification("🚚 Nouvelle commande TELIMA !", {
         body: `Livraison vers : ${deliveryAddress}\nAcceptez dans 30 secondes`,
         icon: "/favicon.ico",
-        tag: "livrelo-new-order",
+        tag: "telima-new-order",
         requireInteraction: true,
       });
     }
