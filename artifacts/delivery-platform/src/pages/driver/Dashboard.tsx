@@ -1,5 +1,13 @@
 import { useAuth } from "@/lib/auth";
-import { useGetMyDriver, useSetDriverAvailability, useListOrders, getGetMyDriverQueryKey, getListOrdersQueryKey } from "@workspace/api-client-react";
+import {
+  useGetMyDriver,
+  useSetDriverAvailability,
+  useListOrders,
+  useAcceptOrder,
+  useRejectOrder,
+  getGetMyDriverQueryKey,
+  getListOrdersQueryKey,
+} from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,10 +16,23 @@ import { Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { statusLabel, statusColor } from "@/lib/orderStatus";
-import { Truck, Package, CheckCircle2, DollarSign, ToggleRight, Radio } from "lucide-react";
+import {
+  Truck,
+  Package,
+  CheckCircle2,
+  DollarSign,
+  ToggleRight,
+  Radio,
+  PhoneIncoming,
+  MapPin,
+  X,
+  Check,
+  Clock,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import DeliveryTracker from "@/components/DeliveryTracker";
+import { useIncomingOrderAlert } from "@/hooks/useIncomingOrderAlert";
 
 export default function DriverDashboard() {
   const { user } = useAuth();
@@ -19,18 +40,23 @@ export default function DriverDashboard() {
     query: { queryKey: getGetMyDriverQueryKey(), refetchInterval: 5000 },
   });
   const { data: ordersData, isLoading: ordersLoading } = useListOrders(undefined, {
-    query: { queryKey: getListOrdersQueryKey(), refetchInterval: 5000 },
+    query: { queryKey: getListOrdersQueryKey(), refetchInterval: 3000 },
   });
   const setAvailability = useSetDriverAvailability();
+  const acceptOrder = useAcceptOrder();
+  const rejectOrder = useRejectOrder();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const orders = ordersData?.orders ?? [];
   const delivered = orders.filter((o) => o.status === "delivered");
+  const pending = orders.find((o) => o.status === "pending");
   const active = orders.find((o) =>
     ["accepted", "pickup_en_route", "picked_up", "delivery_en_route"].includes(o.status)
   );
   const totalEarnings = delivered.reduce((s, o) => s + (o.driverAmount ?? 0), 0);
+
+  const countdown = useIncomingOrderAlert(pending);
 
   const handleToggle = (checked: boolean) => {
     setAvailability.mutate({ data: { isAvailable: checked } }, {
@@ -40,6 +66,31 @@ export default function DriverDashboard() {
       },
     });
   };
+
+  const handleAccept = () => {
+    if (!pending) return;
+    acceptOrder.mutate({ id: pending.id }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
+        toast({ title: "Commande acceptée !", description: "Rendez-vous au point de récupération." });
+      },
+      onError: () => toast({ title: "Erreur", description: "Impossible d'accepter la commande.", variant: "destructive" }),
+    });
+  };
+
+  const handleReject = () => {
+    if (!pending) return;
+    rejectOrder.mutate({ id: pending.id }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
+        toast({ title: "Commande refusée", description: "La commande sera réassignée." });
+      },
+      onError: () => toast({ title: "Erreur", description: "Impossible de refuser la commande.", variant: "destructive" }),
+    });
+  };
+
+  const countdownColor =
+    countdown > 15 ? "text-green-600" : countdown > 5 ? "text-yellow-500" : "text-red-500";
 
   return (
     <div className="space-y-6">
@@ -53,6 +104,100 @@ export default function DriverDashboard() {
           En direct
         </div>
       </div>
+
+      {/* ─── INCOMING ORDER ALERT ─── */}
+      {pending && (
+        <div
+          className="rounded-2xl overflow-hidden border-2 border-orange-400 shadow-lg animate-in slide-in-from-top-4 duration-300"
+          data-testid="incoming-order-card"
+        >
+          {/* flashing header */}
+          <div className="bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                  <PhoneIncoming className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-white text-base leading-none">Nouvelle commande !</p>
+                  <p className="text-white/80 text-xs mt-0.5">Commande #{pending.id}</p>
+                </div>
+              </div>
+              {/* countdown ring */}
+              <div className="flex flex-col items-center">
+                <div className={`text-2xl font-black tabular-nums ${countdown <= 10 ? "text-white animate-pulse" : "text-white"}`}>
+                  {countdown}s
+                </div>
+                <p className="text-white/70 text-xs">restantes</p>
+              </div>
+            </div>
+
+            {/* progress bar */}
+            <div className="mt-3 h-1.5 bg-white/30 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-white rounded-full transition-all duration-1000"
+                style={{ width: `${(countdown / 30) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* order details */}
+          <div className="bg-orange-50 px-5 py-4 space-y-3">
+            {pending.pickupAddress && (
+              <div className="flex gap-3 items-start">
+                <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center shrink-0 mt-0.5">
+                  <MapPin className="h-3.5 w-3.5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium">Récupération</p>
+                  <p className="text-sm font-semibold">{pending.pickupAddress}</p>
+                </div>
+              </div>
+            )}
+            <div className="flex gap-3 items-start">
+              <div className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center shrink-0 mt-0.5">
+                <MapPin className="h-3.5 w-3.5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground font-medium">Livraison</p>
+                <p className="text-sm font-semibold">{pending.deliveryAddress}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-orange-200">
+              <div className="flex items-center gap-1.5 text-sm">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Votre gain estimé</span>
+              </div>
+              <span className="font-bold text-lg text-green-600">
+                {(pending.driverAmount ?? 0).toLocaleString()} FCFA
+              </span>
+            </div>
+          </div>
+
+          {/* action buttons */}
+          <div className="grid grid-cols-2 gap-0 border-t border-orange-200">
+            <button
+              onClick={handleReject}
+              disabled={rejectOrder.isPending || acceptOrder.isPending}
+              className="flex items-center justify-center gap-2 py-4 bg-white hover:bg-red-50 text-red-500 font-semibold text-sm border-r border-orange-200 transition-colors disabled:opacity-50"
+              data-testid="button-reject-order"
+            >
+              <X className="h-4 w-4" />
+              Refuser
+            </button>
+            <button
+              onClick={handleAccept}
+              disabled={acceptOrder.isPending || rejectOrder.isPending}
+              className="flex items-center justify-center gap-2 py-4 bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors disabled:opacity-50"
+              data-testid="button-accept-order"
+            >
+              <Check className="h-4 w-4" />
+              {acceptOrder.isPending ? "Acceptation…" : "Accepter"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Availability toggle */}
       <div className={`rounded-2xl p-5 border-2 flex items-center justify-between transition-all ${
@@ -114,21 +259,18 @@ export default function DriverDashboard() {
       {/* Active order with inline tracker */}
       {active && (
         <div className="rounded-2xl border-2 border-primary/30 overflow-hidden" data-testid="active-order-card">
-          {/* Header */}
           <div className="bg-gradient-to-r from-[#0f6030] to-[#1a9b4b] px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#f5c518]" style={{ animation: "ping-yellow 1.5s ease-in-out infinite" }} />
+              <div className="w-2 h-2 rounded-full bg-[#f5c518] animate-ping" />
               <h2 className="font-semibold text-sm text-white uppercase tracking-wide">Livraison en cours</h2>
             </div>
             <Badge className={statusColor(active.status)} variant="secondary">{statusLabel(active.status)}</Badge>
           </div>
 
-          {/* Tracker */}
           <div className="px-5 pt-4 pb-2 bg-primary/5">
             <DeliveryTracker status={active.status as Parameters<typeof DeliveryTracker>[0]["status"]} />
           </div>
 
-          {/* Order info */}
           <div className="px-5 pb-4 bg-primary/5 space-y-2 text-sm">
             {active.pickupAddress && (
               <div className="flex gap-2 items-start">
@@ -157,12 +299,16 @@ export default function DriverDashboard() {
         </div>
       )}
 
-      <style>{`
-        @keyframes ping-yellow {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(2); opacity: 0; }
-        }
-      `}</style>
+      {/* Empty state when no orders */}
+      {!pending && !active && !ordersLoading && driver?.isAvailable && (
+        <div className="rounded-2xl border border-dashed border-primary/30 p-8 text-center">
+          <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <Truck className="h-6 w-6 text-primary" />
+          </div>
+          <p className="font-semibold text-foreground">En attente de commandes</p>
+          <p className="text-sm text-muted-foreground mt-1">Les nouvelles commandes apparaîtront ici automatiquement</p>
+        </div>
+      )}
 
       {/* Recent deliveries */}
       <div className="bg-card border rounded-2xl">
@@ -173,7 +319,7 @@ export default function DriverDashboard() {
           </Link>
         </div>
         {ordersLoading ? (
-          <div className="p-5 space-y-3">{[1,2].map(i => <Skeleton key={i} className="h-12 w-full rounded-xl" />)}</div>
+          <div className="p-5 space-y-3">{[1, 2].map(i => <Skeleton key={i} className="h-12 w-full rounded-xl" />)}</div>
         ) : delivered.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground text-sm">Aucune livraison effectuée</div>
         ) : (
@@ -186,7 +332,9 @@ export default function DriverDashboard() {
                   </div>
                   <div>
                     <p className="font-medium">Commande #{o.id}</p>
-                    <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(o.createdAt), { addSuffix: true, locale: fr })}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(o.createdAt), { addSuffix: true, locale: fr })}
+                    </p>
                   </div>
                 </div>
                 <span className="font-bold text-primary">+{(o.driverAmount ?? 0).toLocaleString()} FCFA</span>
