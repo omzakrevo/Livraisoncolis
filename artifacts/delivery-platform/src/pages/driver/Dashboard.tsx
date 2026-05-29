@@ -50,7 +50,8 @@ export default function DriverDashboard() {
 
   const orders = ordersData?.orders ?? [];
   const delivered = orders.filter((o) => o.status === "delivered");
-  const pending = orders.find((o) => o.status === "pending");
+  // "assigned" = order assigned to this driver, waiting for accept/reject
+  const pending = orders.find((o) => o.status === "assigned");
   const active = orders.find((o) =>
     ["accepted", "pickup_en_route", "picked_up", "delivery_en_route"].includes(o.status)
   );
