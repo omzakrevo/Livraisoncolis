@@ -78,7 +78,7 @@ export default function Register() {
                 Gagnez votre vie<br />à votre rythme.
               </p>
               <p className="text-white/60 leading-relaxed mb-6">
-                Rejoignez notre réseau de livreurs à Ouagadougou.
+                Rejoignez notre réseau de livreurs à Bobo-Dioulasso.
                 Travaillez quand vous voulez, acceptez les courses qui vous conviennent.
               </p>
               <ul className="space-y-2">

@@ -20,8 +20,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Ouagadougou center
-const DEFAULT_CENTER: [number, number] = [12.3647, -1.5332];
+// Bobo-Dioulasso center
+const DEFAULT_CENTER: [number, number] = [11.1771, -4.2979];
 const DEFAULT_ZOOM = 13;
 
 type LatLng = { lat: number; lng: number };
@@ -49,10 +49,13 @@ async function reverseGeocode(lat: number, lon: number): Promise<string> {
   return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
 }
 
+// Bobo-Dioulasso bounding box (viewbox: minLon,maxLat,maxLon,minLat)
+const BOBO_VIEWBOX = "-4.5500,11.2800,-4.0500,11.0500";
+
 async function forwardGeocode(query: string): Promise<NominatimResult[]> {
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=bf&accept-language=fr`
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + " Bobo-Dioulasso")}&limit=5&countrycodes=bf&viewbox=${BOBO_VIEWBOX}&bounded=0&accept-language=fr`
     );
     return await res.json();
   } catch (_) {
