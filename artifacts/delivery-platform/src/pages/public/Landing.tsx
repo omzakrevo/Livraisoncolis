@@ -24,7 +24,6 @@ export default function Landing() {
           </div>
         </div>
       </header>
-
       {/* Hero — green gradient, full-bleed on mobile, split on desktop */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#062d17] via-[#0f6030] to-[#1a9b4b]">
         {/* Decorative circles */}
@@ -43,10 +42,7 @@ export default function Landing() {
               Vos courses livrées<br />
               <span className="text-[#f5c518]">en quelques minutes</span>
             </h1>
-            <p className="text-white/70 text-base lg:text-lg mb-8 leading-relaxed max-w-lg">
-              Médicaments, repas, documents, gaz — nos livreurs à moto parcourent
-              Ouagadougou pour vous. Commandez depuis chez vous, recevez où vous êtes.
-            </p>
+            <p className="text-white/70 text-base lg:text-lg mb-8 leading-relaxed max-w-lg">Médicaments, repas, documents, gaz — nos livreurs à moto parcourent Bobo Dioulaso pour vous. Commandez depuis chez vous, recevez où vous êtes.</p>
 
             <div className="flex flex-wrap gap-3">
               <Link to="/register">
@@ -77,7 +73,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* Services */}
       <section className="bg-muted/40 py-20">
         <div className="max-w-6xl mx-auto px-4">
@@ -123,7 +118,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* How it works */}
       <section className="py-20 max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-2">Comment ça marche</h2>
@@ -150,7 +144,6 @@ export default function Landing() {
           ))}
         </div>
       </section>
-
       {/* Stats banner */}
       <section className="bg-gradient-to-r from-[#062d17] to-[#1a9b4b] text-white py-16">
         <div className="max-w-6xl mx-auto px-4">
@@ -169,7 +162,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* CTA */}
       <section className="py-20 text-center max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold mb-3">Prêt à commander ?</h2>
@@ -181,7 +173,6 @@ export default function Landing() {
           </Button>
         </Link>
       </section>
-
       {/* Footer */}
       <footer className="border-t py-8 text-center text-muted-foreground text-sm bg-muted/20">
         <div className="flex items-center justify-center gap-2 mb-2">
