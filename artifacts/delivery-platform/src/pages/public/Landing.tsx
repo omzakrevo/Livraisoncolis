@@ -6,7 +6,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background font-sans">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur-sm">
+      <header className="sticky top-4 z-50 border-b bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
