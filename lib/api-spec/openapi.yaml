@@ -3,20 +3,36 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Delivery platform API for Burkina Faso
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: users
+    description: User management
+  - name: drivers
+    description: Driver management
+  - name: orders
+    description: Order management
+  - name: notifications
+    description: Notifications
+  - name: partners
+    description: Partners and products
+  - name: admin
+    description: Admin operations
+  - name: pricing
+    description: Pricing configuration
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +40,786 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # Auth
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  # Users
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users (admin)
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListResponse"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Update user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}/block:
+    patch:
+      operationId: blockUser
+      tags: [users]
+      summary: Block or unblock a user (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockUserInput"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # Drivers
+  /drivers:
+    get:
+      operationId: listDrivers
+      tags: [drivers]
+      summary: List all drivers
+      parameters:
+        - name: available
+          in: query
+          schema:
+            type: boolean
+        - name: verified
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Drivers list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Driver"
+
+  /drivers/me:
+    get:
+      operationId: getMyDriver
+      tags: [drivers]
+      summary: Get current driver profile
+      responses:
+        "200":
+          description: Driver profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+        "404":
+          description: Not found
+
+    patch:
+      operationId: updateMyDriver
+      tags: [drivers]
+      summary: Update current driver profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverUpdate"
+      responses:
+        "200":
+          description: Updated driver
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+
+  /drivers/me/availability:
+    patch:
+      operationId: setDriverAvailability
+      tags: [drivers]
+      summary: Toggle driver availability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AvailabilityInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+
+  /drivers/me/location:
+    patch:
+      operationId: updateDriverLocation
+      tags: [drivers]
+      summary: Update driver GPS location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+
+  /drivers/{id}:
+    get:
+      operationId: getDriver
+      tags: [drivers]
+      summary: Get driver by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Driver
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+
+  /drivers/{id}/verify:
+    patch:
+      operationId: verifyDriver
+      tags: [drivers]
+      summary: Verify or unverify a driver (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyDriverInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Driver"
+
+  # Orders
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List orders (filtered by current user role)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: customerId
+          in: query
+          schema:
+            type: integer
+        - name: driverId
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderListResponse"
+
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+
+    patch:
+      operationId: updateOrder
+      tags: [orders]
+      summary: Update order (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Update order status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/accept:
+    patch:
+      operationId: acceptOrder
+      tags: [orders]
+      summary: Driver accepts an order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/reject:
+    patch:
+      operationId: rejectOrder
+      tags: [orders]
+      summary: Driver rejects an order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/cancel:
+    patch:
+      operationId: cancelOrder
+      tags: [orders]
+      summary: Cancel an order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/confirm-delivery:
+    patch:
+      operationId: confirmDelivery
+      tags: [orders]
+      summary: Confirm delivery with OTP code
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtpInput"
+      responses:
+        "200":
+          description: Confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid OTP
+
+  # Notifications
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List notifications for current user
+      parameters:
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /notifications/read-all:
+    patch:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      summary: Mark all notifications as read
+      responses:
+        "200":
+          description: Done
+
+  # Partners
+  /partners:
+    get:
+      operationId: listPartners
+      tags: [partners]
+      summary: List partners
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Partners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Partner"
+
+    post:
+      operationId: createPartner
+      tags: [partners]
+      summary: Create a partner (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartnerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+
+  /partners/{id}:
+    get:
+      operationId: getPartner
+      tags: [partners]
+      summary: Get partner by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Partner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+
+    patch:
+      operationId: updatePartner
+      tags: [partners]
+      summary: Update partner (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartnerUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+
+  # Products
+  /products:
+    get:
+      operationId: listProducts
+      tags: [partners]
+      summary: List products
+      parameters:
+        - name: partnerId
+          in: query
+          schema:
+            type: integer
+        - name: available
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+    post:
+      operationId: createProduct
+      tags: [partners]
+      summary: Create a product (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    patch:
+      operationId: updateProduct
+      tags: [partners]
+      summary: Update product (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  # Admin stats
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get platform statistics
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/revenue:
+    get:
+      operationId: getRevenueStats
+      tags: [admin]
+      summary: Get revenue and commission stats
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, all]
+      responses:
+        "200":
+          description: Revenue stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RevenueStats"
+
+  # Pricing
+  /pricing:
+    get:
+      operationId: getPricing
+      tags: [pricing]
+      summary: Get current pricing configuration
+      responses:
+        "200":
+          description: Pricing config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pricing"
+
+    patch:
+      operationId: updatePricing
+      tags: [pricing]
+      summary: Update pricing (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PricingUpdate"
+      responses:
+        "200":
+          description: Updated pricing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pricing"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +830,310 @@ components:
       required:
         - status
 
+    # Auth
+    RegisterInput:
+      type: object
+      required: [name, email, password, phone, role]
+      properties:
+        name: { type: string, minLength: 1 }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 6 }
+        phone: { type: string }
+        role: { type: string, enum: [client, driver] }
+        vehicleType: { type: ["string", "null"] }
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string }
+        password: { type: string }
+
+    AuthResponse:
+      type: object
+      required: [user]
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+
+    # User
+    User:
+      type: object
+      required: [id, name, email, phone, role, isBlocked, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        role: { type: string, enum: [client, driver, admin] }
+        isBlocked: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    UserUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        phone: { type: string }
+
+    BlockUserInput:
+      type: object
+      required: [isBlocked]
+      properties:
+        isBlocked: { type: boolean }
+
+    UserListResponse:
+      type: object
+      required: [users, total]
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        total: { type: integer }
+
+    # Driver
+    Driver:
+      type: object
+      required: [id, userId, vehicleType, isAvailable, isVerified, createdAt]
+      properties:
+        id: { type: integer }
+        userId: { type: integer }
+        vehicleType: { type: string }
+        isAvailable: { type: boolean }
+        isVerified: { type: boolean }
+        currentLatitude: { type: ["number", "null"] }
+        currentLongitude: { type: ["number", "null"] }
+        createdAt: { type: string, format: date-time }
+        user:
+          $ref: "#/components/schemas/User"
+
+    DriverUpdate:
+      type: object
+      properties:
+        vehicleType: { type: string }
+
+    AvailabilityInput:
+      type: object
+      required: [isAvailable]
+      properties:
+        isAvailable: { type: boolean }
+
+    LocationInput:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude: { type: number }
+        longitude: { type: number }
+
+    VerifyDriverInput:
+      type: object
+      required: [isVerified]
+      properties:
+        isVerified: { type: boolean }
+
+    # Order
+    Order:
+      type: object
+      required: [id, customerId, orderType, deliveryAddress, status, paymentMethod, paymentStatus, createdAt]
+      properties:
+        id: { type: integer }
+        customerId: { type: integer }
+        driverId: { type: ["integer", "null"] }
+        orderType: { type: string, enum: [delivery, errand] }
+        pickupAddress: { type: ["string", "null"] }
+        pickupLatitude: { type: ["number", "null"] }
+        pickupLongitude: { type: ["number", "null"] }
+        deliveryAddress: { type: string }
+        deliveryLatitude: { type: ["number", "null"] }
+        deliveryLongitude: { type: ["number", "null"] }
+        itemDescription: { type: ["string", "null"] }
+        recipientPhone: { type: ["string", "null"] }
+        specialInstructions: { type: ["string", "null"] }
+        estimatedPurchaseBudget: { type: ["number", "null"] }
+        totalPrice: { type: ["number", "null"] }
+        driverAmount: { type: ["number", "null"] }
+        platformCommission: { type: ["number", "null"] }
+        paymentMethod: { type: string, enum: [cash, mobile_money] }
+        paymentStatus: { type: string, enum: [pending, paid] }
+        status:
+          type: string
+          enum: [pending, assigned, accepted, pickup_en_route, picked_up, delivery_en_route, delivered, cancelled]
+        otpCode: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+        customer:
+          $ref: "#/components/schemas/User"
+        driver:
+          $ref: "#/components/schemas/Driver"
+
+    OrderInput:
+      type: object
+      required: [orderType, deliveryAddress, paymentMethod]
+      properties:
+        orderType: { type: string, enum: [delivery, errand] }
+        pickupAddress: { type: ["string", "null"] }
+        pickupLatitude: { type: ["number", "null"] }
+        pickupLongitude: { type: ["number", "null"] }
+        deliveryAddress: { type: string }
+        deliveryLatitude: { type: ["number", "null"] }
+        deliveryLongitude: { type: ["number", "null"] }
+        itemDescription: { type: ["string", "null"] }
+        recipientPhone: { type: ["string", "null"] }
+        specialInstructions: { type: ["string", "null"] }
+        estimatedPurchaseBudget: { type: ["number", "null"] }
+        paymentMethod: { type: string, enum: [cash, mobile_money] }
+
+    OrderUpdate:
+      type: object
+      properties:
+        totalPrice: { type: number }
+        driverAmount: { type: number }
+        platformCommission: { type: number }
+        paymentStatus: { type: string, enum: [pending, paid] }
+
+    OrderStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, assigned, accepted, pickup_en_route, picked_up, delivery_en_route, delivered, cancelled]
+
+    OtpInput:
+      type: object
+      required: [otpCode]
+      properties:
+        otpCode: { type: string, minLength: 4, maxLength: 4 }
+
+    OrderListResponse:
+      type: object
+      required: [orders, total]
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+        total: { type: integer }
+
+    # Notification
+    Notification:
+      type: object
+      required: [id, userId, title, message, isRead, createdAt]
+      properties:
+        id: { type: integer }
+        userId: { type: integer }
+        title: { type: string }
+        message: { type: string }
+        isRead: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    # Partner
+    Partner:
+      type: object
+      required: [id, name, category, address, phone, isActive, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        category: { type: string, enum: [restaurant, pharmacy, boutique, supermarket, bakery, other] }
+        address: { type: string }
+        phone: { type: string }
+        logo: { type: ["string", "null"] }
+        isActive: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    PartnerInput:
+      type: object
+      required: [name, category, address, phone]
+      properties:
+        name: { type: string }
+        category: { type: string, enum: [restaurant, pharmacy, boutique, supermarket, bakery, other] }
+        address: { type: string }
+        phone: { type: string }
+        logo: { type: ["string", "null"] }
+
+    PartnerUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        category: { type: string }
+        address: { type: string }
+        phone: { type: string }
+        logo: { type: ["string", "null"] }
+        isActive: { type: boolean }
+
+    # Product
+    Product:
+      type: object
+      required: [id, partnerId, name, price, isAvailable, createdAt]
+      properties:
+        id: { type: integer }
+        partnerId: { type: integer }
+        name: { type: string }
+        description: { type: ["string", "null"] }
+        price: { type: number }
+        image: { type: ["string", "null"] }
+        isAvailable: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    ProductInput:
+      type: object
+      required: [partnerId, name, price]
+      properties:
+        partnerId: { type: integer }
+        name: { type: string }
+        description: { type: ["string", "null"] }
+        price: { type: number }
+        image: { type: ["string", "null"] }
+        isAvailable: { type: boolean }
+
+    ProductUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: ["string", "null"] }
+        price: { type: number }
+        image: { type: ["string", "null"] }
+        isAvailable: { type: boolean }
+
+    # Admin stats
+    AdminStats:
+      type: object
+      required: [totalOrders, pendingOrders, activeOrders, deliveredOrders, cancelledOrders, totalClients, totalDrivers, availableDrivers, totalRevenue, totalCommission]
+      properties:
+        totalOrders: { type: integer }
+        pendingOrders: { type: integer }
+        activeOrders: { type: integer }
+        deliveredOrders: { type: integer }
+        cancelledOrders: { type: integer }
+        totalClients: { type: integer }
+        totalDrivers: { type: integer }
+        availableDrivers: { type: integer }
+        totalRevenue: { type: number }
+        totalCommission: { type: number }
+
+    RevenueStats:
+      type: object
+      required: [totalRevenue, totalCommission, totalDriverEarnings, orderCount, period]
+      properties:
+        totalRevenue: { type: number }
+        totalCommission: { type: number }
+        totalDriverEarnings: { type: number }
+        orderCount: { type: integer }
+        period: { type: string }
+
+    # Pricing
+    Pricing:
+      type: object
+      required: [id, baseDeliveryFee, commissionRate, minDeliveryFee, updatedAt]
+      properties:
+        id: { type: integer }
+        baseDeliveryFee: { type: number }
+        commissionRate: { type: number }
+        minDeliveryFee: { type: number }
+        updatedAt: { type: string, format: date-time }
+
+    PricingUpdate:
+      type: object
+      properties:
+        baseDeliveryFee: { type: number }
+        commissionRate: { type: number }
+        minDeliveryFee: { type: number }

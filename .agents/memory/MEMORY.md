@@ -1,0 +1,1 @@
+- [Livrelo project setup](livrelo-setup.md) — key conventions, seed accounts, and sharp edges for the Livrelo delivery platform.

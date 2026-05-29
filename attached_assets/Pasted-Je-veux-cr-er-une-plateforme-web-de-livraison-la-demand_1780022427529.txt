@@ -1,0 +1,385 @@
+Je veux créer une plateforme web de livraison à la demande au Burkina Faso.
+
+Le projet doit permettre à un client de demander une livraison ou une course depuis une application web.
+
+## 1. Objectif général
+
+Créer une plateforme de livraison avec 3 interfaces :
+
+1. Interface Client
+2. Interface Livreur
+3. Interface Administrateur
+
+La plateforme doit permettre :
+
+* La livraison de colis d’un point A vers un point B
+* Les courses à la demande : gaz, médicaments, repas, documents, achats divers
+* L’ajout futur de produits ou plats de partenaires
+
+## 2. Fonctionnement côté client
+
+Le client doit pouvoir créer un compte, se connecter, puis lancer une commande.
+
+Il doit choisir le type de service :
+
+### Type 1 : Livraison de colis
+
+Le client renseigne :
+
+* Adresse de récupération du colis
+* Adresse de livraison
+* Description du colis
+* Numéro du destinataire
+* Instructions particulières
+
+### Type 2 : Course / achat pour moi
+
+Le client renseigne :
+
+* Ce qu’il faut acheter
+* Adresse de livraison
+* Instructions particulières
+* Budget estimé de l’achat
+
+Dans ce cas, il n’y a pas forcément d’adresse de récupération, seulement le lieu de livraison.
+
+## 3. Recherche automatique du livreur
+
+Quand le client lance une commande :
+
+1. Le système enregistre la commande avec le statut : “En attente de livreur”.
+2. Le système recherche le livreur disponible le plus proche.
+3. La commande est envoyée au livreur.
+4. Le livreur peut accepter ou refuser.
+5. S’il refuse ou ne répond pas après 30 secondes, le système envoie la commande au livreur disponible suivant.
+6. Si un livreur accepte, le client reçoit une notification.
+7. L’administrateur voit toutes les étapes en temps réel.
+
+## 4. Fonctionnement côté livreur
+
+Le livreur doit pouvoir :
+
+* Créer un compte
+* Se connecter
+* Activer ou désactiver sa disponibilité
+* Recevoir une nouvelle commande
+* Accepter ou refuser la commande
+* Voir les détails de la commande
+* Voir l’adresse de récupération si c’est une livraison de colis
+* Voir l’adresse de livraison
+* Changer le statut de la commande
+
+Les statuts possibles :
+
+* Commande reçue
+* Acceptée
+* En route vers le point de récupération
+* Colis récupéré
+* En cours de livraison
+* Livré
+* Annulé
+
+Après la livraison, la fin de commande peut être validée par :
+
+* Le client
+* Ou le livreur
+
+Mais je veux aussi prévoir un code OTP de validation à 4 chiffres.
+Le client reçoit le code, et le livreur doit saisir ce code pour confirmer la livraison.
+
+## 5. Fonctionnement côté administrateur
+
+L’administrateur doit avoir un tableau de bord complet.
+
+Il doit voir :
+
+* Toutes les commandes
+* Les commandes en attente
+* Les commandes acceptées
+* Les commandes en cours
+* Les commandes livrées
+* Les commandes annulées
+* Les clients inscrits
+* Les livreurs inscrits
+* Les livreurs disponibles
+* Les revenus de la plateforme
+* La commission gagnée sur chaque commande
+
+L’administrateur doit pouvoir :
+
+* Valider ou bloquer un livreur
+* Voir les détails d’une commande
+* Modifier le statut d’une commande
+* Annuler une commande
+* Ajouter des partenaires
+* Ajouter des produits ou plats de partenaires
+* Modifier les tarifs de livraison
+* Voir les paiements
+
+## 6. Paiement et commission
+
+Prévoir deux modes de paiement :
+
+1. Paiement en espèces
+2. Paiement Mobile Money à ajouter plus tard
+
+Pour le MVP, commencer avec paiement en espèces.
+
+La plateforme gagne de l’argent par commission.
+
+Exemple :
+
+* Prix de la livraison : 2 000 FCFA
+* Part livreur : 1 500 FCFA
+* Commission plateforme : 500 FCFA
+
+Le système doit enregistrer :
+
+* Montant total payé
+* Part du livreur
+* Commission de la plateforme
+* Mode de paiement
+* Statut du paiement
+
+## 7. Produits partenaires à ajouter plus tard
+
+Prévoir une section partenaires.
+
+Les partenaires peuvent être :
+
+* Restaurants
+* Pharmacies
+* Boutiques
+* Supérettes
+* Boulangeries
+
+Chaque partenaire peut avoir :
+
+* Nom
+* Logo
+* Adresse
+* Téléphone
+* Catégorie
+* Liste des produits ou plats
+* Prix
+* Disponibilité
+
+Le client pourra plus tard commander directement un produit partenaire.
+
+## 8. Notifications
+
+Prévoir un système de notifications pour :
+
+### Client
+
+* Commande créée
+* Livreur trouvé
+* Livreur en route
+* Colis récupéré
+* Livraison en cours
+* Commande livrée
+* Commande annulée
+
+### Livreur
+
+* Nouvelle commande disponible
+* Commande annulée
+* Message de l’administrateur
+
+### Admin
+
+* Nouvelle commande
+* Commande sans livreur
+* Livraison terminée
+* Problème signalé
+
+## 9. Rôles utilisateurs
+
+Créer 3 rôles :
+
+1. Client
+2. Livreur
+3. Admin
+
+Chaque rôle doit avoir son tableau de bord spécifique.
+
+## 10. Technologies souhaitées
+
+Créer une application web moderne, responsive et simple à utiliser.
+
+Technologies proposées :
+
+* Frontend : React
+* Backend : Node.js / Express
+* Base de données : PostgreSQL
+* Authentification : email + mot de passe
+* Cartographie : Google Maps ou OpenStreetMap
+* Notifications : système interne au départ
+* Design : simple, clair, mobile-first
+
+## 11. Base de données
+
+Créer les tables principales :
+
+### users
+
+* id
+* name
+* phone
+* email
+* password
+* role
+* created_at
+
+### drivers
+
+* id
+* user_id
+* vehicle_type
+* is_available
+* is_verified
+* current_latitude
+* current_longitude
+* created_at
+
+### orders
+
+* id
+* customer_id
+* driver_id
+* order_type
+* pickup_address
+* pickup_latitude
+* pickup_longitude
+* delivery_address
+* delivery_latitude
+* delivery_longitude
+* item_description
+* estimated_purchase_budget
+* total_price
+* driver_amount
+* platform_commission
+* payment_method
+* payment_status
+* status
+* otp_code
+* created_at
+
+### partners
+
+* id
+* name
+* category
+* address
+* phone
+* logo
+* is_active
+* created_at
+
+### products
+
+* id
+* partner_id
+* name
+* description
+* price
+* image
+* is_available
+* created_at
+
+### notifications
+
+* id
+* user_id
+* title
+* message
+* is_read
+* created_at
+
+## 12. Règle de choix du livreur le plus proche
+
+Le système doit chercher les livreurs :
+
+* Disponibles
+* Vérifiés
+* Connectés
+* Les plus proches de l’adresse de récupération ou de livraison
+
+Pour une livraison de colis :
+
+* Chercher le livreur le plus proche du point de récupération.
+
+Pour une course / achat pour moi :
+
+* Chercher le livreur le plus proche de l’adresse de livraison.
+
+Si le livreur refuse, passer automatiquement au suivant.
+
+## 13. Pages à créer
+
+### Pages publiques
+
+* Accueil
+* Connexion
+* Inscription
+* À propos
+* Contact
+
+### Client
+
+* Tableau de bord client
+* Créer une commande
+* Mes commandes
+* Détails d’une commande
+* Notifications
+
+### Livreur
+
+* Tableau de bord livreur
+* Commandes proposées
+* Commande en cours
+* Historique des livraisons
+* Disponibilité
+* Notifications
+
+### Admin
+
+* Tableau de bord admin
+* Gestion des commandes
+* Gestion des clients
+* Gestion des livreurs
+* Gestion des partenaires
+* Gestion des produits
+* Gestion des tarifs
+* Statistiques
+* Notifications
+
+## 14. Design
+
+Je veux une interface :
+
+* Simple
+* Moderne
+* Mobile-first
+* Adaptée au Burkina Faso
+* Couleurs professionnelles
+* Boutons clairs
+* Icônes faciles à comprendre
+
+## 15. MVP à réaliser en premier
+
+Créer d’abord la version MVP avec :
+
+* Inscription et connexion
+* Rôles Client / Livreur / Admin
+* Création de commande
+* Attribution automatique au livreur le plus proche
+* Acceptation ou refus par le livreur
+* Suivi des statuts
+* Tableau de bord admin
+* Paiement en espèces
+* Commission plateforme
+* Validation livraison avec OTP
+* Notifications internes
+
+Ne pas commencer par une application trop compliquée. Je veux une première version fonctionnelle, claire et évolutive.
