@@ -22,8 +22,6 @@ CATEGORIES = [
             ("Flag grande (65 cl)", "800"), ("So.b.bra grande (65 cl)", "700"),
             ("Beaufort (33 cl)", "600"), ("Heineken (33 cl)", "1 000"),
             ("Guinness petite (33 cl)", "800"), ("Guinness grande (65 cl)", "1 200")]),
-        ("Boissons locales", [
-            ("Dolo (calebasse)", "200"), ("Bangui / vin de palme", "300")]),
         ("Vins & spiritueux", [
             ("Vin rouge (verre)", "500"), ("Vin rouge (bouteille)", "3 500"),
             ("Pastis (verre)", "1 000"), ("Whisky (verre)", "1 000")]),
