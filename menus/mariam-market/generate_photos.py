@@ -1,0 +1,96 @@
+"""Menus Mariam Market par catégorie, reprenant la mise en page du modèle (photos à gauche, cartes à droite)."""
+import os
+from generate_categories import CATEGORIES, TEL, VILLE
+
+# Photo (fichier dans photos/) ou emoji de remplacement, par catégorie.
+PICS = {
+    "boissons": ["emoji:🥤", "emoji:🧃", "photo:cafe", "emoji:🍹"],
+    "maquis": ["emoji:🍺", "emoji:🍻", "emoji:🍷", "emoji:🥃"],
+    "fast-food": ["photo:burger", "emoji:🍕", "photo:brochettes", "photo:poulet"],
+    "restauration": ["emoji:🍛", "emoji:🍝", "photo:poulet", "emoji:🍲"],
+    "patisserie": ["photo:pain", "emoji:🥐", "photo:cafe", "emoji:🍰"],
+}
+
+TABS = {"Pâtisserie": "NOS PÂTISSERIES", "Formules petit-déjeuner": "PETIT-DÉJEUNER"}
+
+CSS = """
+@font-face{font-family:P;font-weight:700;src:url(../fonts/Poppins-wght-700.woff)}
+@font-face{font-family:P;font-weight:800;src:url(../fonts/Poppins-wght-800.woff)}
+@font-face{font-family:P;font-weight:900;src:url(../fonts/Poppins-wght-900.woff)}
+@font-face{font-family:P;font-weight:800;font-style:italic;src:url(../fonts/Poppins-ital-wght-1-800.woff)}
+@font-face{font-family:P;font-weight:900;font-style:italic;src:url(../fonts/Poppins-ital-wght-1-900.woff)}
+:root{--red:#ec1c24;--red2:#b90f16;--blue:#2146d0;--ink:#1b1b1b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1240px;height:1754px;font-family:P,sans-serif;color:var(--ink);background:#f7f7f7;position:relative;overflow:hidden}
+.bg{position:absolute;inset:-100px;opacity:.08;font-size:62px;display:flex;flex-wrap:wrap;gap:60px 95px;padding:40px;filter:grayscale(1) contrast(.6);transform:rotate(-10deg)}
+.head{position:absolute;left:0;top:0;width:1240px;height:330px}
+.logo{position:absolute;left:52px;top:40px;text-align:center;line-height:.9;z-index:2}
+.logo .l1{font-weight:900;font-size:82px;color:#fff;letter-spacing:1px}
+.logo .l2{font-weight:900;font-size:92px;color:var(--blue);-webkit-text-stroke:9px #fff;paint-order:stroke fill;margin-top:2px}
+.logo .l3{font-weight:800;font-size:24px;color:#fff;margin-top:10px;letter-spacing:1px}
+.title{position:absolute;right:34px;top:48px;font-weight:900;font-style:italic;font-size:200px;line-height:1;color:var(--red);-webkit-text-stroke:16px #fff;paint-order:stroke fill;text-shadow:0 10px 14px rgba(0,0,0,.28);letter-spacing:-4px;z-index:2}
+main{position:absolute;left:0;right:0;top:282px;bottom:128px;display:grid;grid-template-columns:372px minmax(0,1fr);padding:0 38px 0 22px}
+.pics{display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.pics img{max-width:350px;max-height:280px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.25))}
+.pics .em{font-size:215px;line-height:1.1;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25))}
+.cards{display:flex;flex-direction:column;justify-content:space-evenly;gap:74px;padding-top:64px}
+.card{position:relative;background:#fff;border-radius:34px;padding:34px 36px 22px 32px;box-shadow:0 12px 18px rgba(0,0,0,.2);border-top:6px solid var(--red);border-left:3px solid var(--red)}
+.tab{position:absolute;right:0;top:-54px;background:var(--red);color:#fff;font-weight:900;font-style:italic;font-size:35px;padding:3px 30px 3px 44px;clip-path:polygon(26px 0,100% 0,100% 100%,0 100%);border-radius:0 30px 0 0;white-space:nowrap}
+li{list-style:none;display:flex;align-items:baseline;font-weight:700;line-height:1.46}
+.n{white-space:nowrap}
+.d{flex:1;border-bottom:4px dotted #222;margin:0 6px;transform:translateY(-8px);min-width:18px}
+.p{white-space:nowrap}
+.warn{position:absolute;left:0;right:0;bottom:106px;text-align:center;font-weight:800;font-size:20px;color:var(--red2)}
+.foot{position:absolute;left:0;right:0;bottom:22px;height:66px;display:flex;align-items:stretch}
+.f1{background:var(--red);color:#fff;width:420px;display:flex;align-items:center;justify-content:center;gap:12px;font-weight:700;font-size:33px;border-radius:0 34px 34px 0;z-index:1}
+.f2{background:var(--blue);color:#fff;flex:1;margin-left:22px;display:flex;align-items:center;justify-content:center;gap:14px;font-weight:800;font-size:38px;border-radius:34px 0 0 34px}
+.strip{position:absolute;left:0;right:0;bottom:0;height:12px;background:var(--red)}
+"""
+
+HEAD = """<svg class="head" viewBox="0 0 1240 330">
+<path d="M0 0H1240V132C900 150 640 180 470 225 330 262 150 262 0 250Z" fill="#ec1c24"/>
+<path d="M470 225C640 180 900 150 1240 132V168C930 178 690 196 520 238Z" fill="#2146d0"/>
+<path d="M0 250C150 262 330 262 470 225L520 238C340 300 170 300 0 290Z" fill="#fff"/>
+<path d="M0 290C170 300 340 300 520 238L545 244C360 318 170 320 0 312Z" fill="#2146d0"/></svg>"""
+
+JS = """<script>
+document.fonts.ready.then(()=>{const m=document.querySelector('main'),c=document.querySelector('.cards');
+let fs=38;const set=()=>document.querySelectorAll('li').forEach(l=>l.style.fontSize=fs+'px');set();
+while((c.scrollHeight>m.clientHeight||[...document.querySelectorAll('li')].some(l=>l.scrollWidth>l.clientWidth))&&fs>20){fs-=.5;set();}
+document.body.dataset.ready=fs;});
+</script>"""
+
+
+def fmt(p):
+    return p.replace(" ", "") + "f"
+
+
+def pic(spec):
+    kind, val = spec.split(":", 1)
+    return f'<img src="../photos/{val}.png" alt="">' if kind == "photo" else f'<div class="em">{val}</div>'
+
+
+def page(slug, title, groups):
+    cards = "".join(
+        f'<section class="card"><div class="tab">{TABS.get(g, "NOS " + g.upper())}</div><ul>'
+        + "".join(f'<li><span class="n">{n}</span><span class="d"></span><span class="p">{fmt(p)}</span></li>'
+                  for n, p in items) + "</ul></section>" for g, items in groups)
+    bg = "".join(f"<span>{e}</span>" for e in (["🥕", "🧅", "🍅", "🌶", "🥬"] * 20))
+    warn = ('<div class="warn">🔞 Vente interdite aux mineurs · L\'abus d\'alcool est dangereux pour la santé, '
+            'à consommer avec modération</div>') if slug == "maquis" else ""
+    return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<title>Mariam Market · {title.title()}</title><style>{CSS}</style></head><body>
+<div class="bg">{bg}</div>{HEAD}
+<div class="logo"><div class="l1">MARIAM</div><div class="l2">MARKET</div><div class="l3">CAFÉ · RESTAU · PÂTISSERIE</div></div>
+<div class="title">Menu</div>
+<main><div class="pics">{''.join(pic(s) for s in PICS[slug])}</div><div class="cards">{cards}</div></main>{warn}
+<div class="foot"><div class="f1">📞 Infoline : (+226)</div><div class="f2">{TEL.replace(' ', '.')} &nbsp;|&nbsp; {VILLE}</div></div>
+<div class="strip"></div>{JS}</body></html>"""
+
+
+if __name__ == "__main__":
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "categories-photos")
+    os.makedirs(out, exist_ok=True)
+    for i, (slug, title, _sub, _pics, groups) in enumerate(CATEGORIES, 1):
+        with open(os.path.join(out, f"{i}-{slug}.html"), "w", encoding="utf-8") as f:
+            f.write(page(slug, title, groups))
